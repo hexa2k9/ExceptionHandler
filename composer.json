@@ -1,0 +1,19 @@
+{
+    "name"             : "hexa2k9/exception-handler",
+    "description"      : "A PHP Exception Handler to Post Exceptions to a Slack Channel",
+    "require"          : {
+        "php"     : ">=5.4.0",
+        "ext-curl": "*"
+    },
+    "license"          : "MIT",
+    "authors"          : [
+        {
+            "name" : "Christian Bönning",
+            "email": "christian@verloren-im.net"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload"         : {
+        "classmap": ["ExceptionHandler.php"]
+    }
+}

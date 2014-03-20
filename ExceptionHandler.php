@@ -160,7 +160,7 @@ final class ExceptionHandler {
      * @param string $webhookUser
      */
     final public static function setWebhookUser($webhookUser = null) {
-        self::$webhookUser = trim($webhookUser) . '.' . self::$env;
+        self::$webhookUser = trim($webhookUser);
     }
 
     /**

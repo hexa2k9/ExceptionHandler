@@ -12,9 +12,9 @@ You needs to configure this Class before you can use it:
 * `\ExceptionHandler::setWebhookUser('<posting_as_username>');`
 * `\ExceptionHandler::setWebhookChannel('<posting_to_channel>');`
 * `\ExceptionHandler::setIcon('<your_icon>');`
-* `\ExceptionHandler::setEnv(APP_environment);`
-* `\ExceptionHandler::setHostname(APP_host);`
-* `\ExceptionHandler::setVersion(APP_version);`
+* `\ExceptionHandler::setEnv('production');`
+* `\ExceptionHandler::setHostname('tiberius');`
+* `\ExceptionHandler::setVersion('1.0.0');`
 
 And finally set the Exception Handler:
 

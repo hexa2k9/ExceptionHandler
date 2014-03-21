@@ -2,7 +2,7 @@
     "name"             : "hexa2k9/exception-handler",
     "description"      : "A PHP Exception Handler to Post Exceptions to a Slack Channel",
     "require"          : {
-        "php"     : ">=5.4.0",
+        "php"     : ">=5.3.0",
         "ext-curl": "*"
     },
     "license"          : "MIT",

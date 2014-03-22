@@ -3,22 +3,34 @@ ExceptionHandler
 
 A PHP Exception Handler to Post Exceptions to a Slack Channel
 
-You will need to Create an Incoming Webhook for your Channel.
+## Installation
 
-You needs to configure this Class before you can use it:
+* make sure your PHP Installation has `curl` loaded
+* create a Channel on Slack
+* create an Incoming Webook for your Slack Channel & copy the Integration Token.
+* add the [Packagist Package](https://packagist.org/packages/hexa2k9/exception-handler) to your `composer.json`
+* run `composer update`
 
-* `\ExceptionHandler::setToken('<your_integration_token>');`
-* `\ExceptionHandler::setUsername('<your_subdomain>');`
-* `\ExceptionHandler::setWebhookUser('<posting_as_username>');`
-* `\ExceptionHandler::setWebhookChannel('<posting_to_channel>');`
-* `\ExceptionHandler::setIcon('<your_icon>');`
-* `\ExceptionHandler::setEnv('production');`
-* `\ExceptionHandler::setHostname('tiberius');`
-* `\ExceptionHandler::setVersion('1.0.0');`
+## Configuration
+
+You need to configure this Class before you can use it:
+
+```php
+\ExceptionHandler::setToken('<your_integration_token>');  // The token you've copied before
+\ExceptionHandler::setUsername('company');                // Your Slack Subdomain (e.g. company.slack.com)
+\ExceptionHandler::setWebhookUser('exception');           // The Username who will post Messages
+\ExceptionHandler::setWebhookChannel('#exceptions');      // Your Slack Channel
+\ExceptionHandler::setIcon(':ghost:');                    // The Icon for the Username (can be :ghost: or an URL)
+\ExceptionHandler::setEnv('production');                  // The Applications Environment (e.g. production or development)
+\ExceptionHandler::setHostname(php_uname('n'));           // The Hostname your Application is running on
+\ExceptionHandler::setVersion('1.0.0');                   // Your Application Version
+```
 
 And finally set the Exception Handler:
 
-* `set_exception_handler(array('\ExceptionHandler', 'handleException'));`
+```php
+set_exception_handler(array('\ExceptionHandler', 'handleException'));
+```
 
 You will start to get Messages like these in your Channel:
 
@@ -28,9 +40,13 @@ ExceptionHandler will quit your current Applications run and returns a `json_enc
 
 ```json
 {
-  status: 500
-  message: "Okay, Houston, we've had a problem here. -- Don't panic. The Team has been notified."
+  "status": 500,
+  "message": "Okay, Houston, we've had a problem here. -- Don't panic. The Team has been notified."
 }
 ```
 
+## other Usage
+
 By default this ExceptionHandler will care about uncaught Exceptions. If you want to send Slack Messages for Exceptions you handled you can use this like `\ExceptionHandler::handleException($exception, true);` to get notified. ExceptionHandler will not `die()` in this case.
+
+You can even use ExdeptionHandler to just send Notifications. This feels a little weired however: `\ExceptionHandler::handleException(new \Exception('I\'m some text to send to Slack.'), true)`;

@@ -35,7 +35,7 @@ set_exception_handler(array('\ExceptionHandler', 'handleException'));
 
 You will start to get Messages like these in your Channel:
 
-> chrisbookair.local/2.0.79@development: uncaught Exception in file /Users/christian/Code/PhpstormProjects/api-v2/app/Classes/Util/GeneralUtility.php on line 519 (Code: 8): Memcache::connect(): Server 127.0.0.1 (tcp 11211) failed with: Connection refused (61)
+> chrisbookair.local/2.0.81@development: uncaught Exception in file /Users/christian/Code/PhpstormProjects/api-v2/app/Classes/Util/GeneralUtility.php on line 581 (Code: 8 - Trace: handleException.1395606690.trace.532f44a20d0cc.txt): Memcache::connect(): Server 127.0.0.1 (tcp 11211) failed with: Connection refused (61)
 
 ExceptionHandler will quit your current Applications run and returns a `json_encode()`d Message
 

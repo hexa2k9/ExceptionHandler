@@ -78,6 +78,11 @@ final class ExceptionHandler {
     protected static $status = 200;
 
     /**
+     * @var string The Path where full Stacktraces are stored
+     */
+    protected static $dataPath = null;
+
+    /**
      * HTTP Status Codes
      * (taken from Slim PHP Framework - thanks Josh)
      *
@@ -164,6 +169,17 @@ final class ExceptionHandler {
     }
 
     /**
+     * @param string $datapath
+     */
+    final public static function setDataPath($datapath = null) {
+        if (is_dir($datapath)) {
+            self::$dataPath = trim($datapath);
+        } else {
+            self::$dataPath = sys_get_temp_dir();
+        }
+    }
+
+    /**
      * @param string $webhookIcon
      */
     final public static function setWebhookIcon($webhookIcon = ':ghost:') {
@@ -215,9 +231,17 @@ final class ExceptionHandler {
             );
         }
 
+        if (is_null(self::$dataPath)) {
+            self::setDataPath();
+        }
+
+        $trace = $exception->getTraceAsString();
+        $traceFile = trim(self::$dataPath) . '/'. __FUNCTION__ . uniqid('.trace.') . sha1(time() . $trace) . '.txt';
+        file_put_contents($traceFile, $trace);
+
         $type = $caught === false ? 'uncaught' : 'caught';
         $messageText = sprintf(
-            '%s/%s@%s: %s Exception in file %s on line %d (Code: %d): %s',
+            '%s/%s@%s: %s Exception in file %s on line %d (Code: %d - Trace: %s): %s',
             self::$hostname,
             self::$version,
             self::$env,
@@ -225,6 +249,7 @@ final class ExceptionHandler {
             $exception->getFile(),
             $exception->getLine(),
             $exception->getCode(),
+            $traceFile,
             $exception->getMessage()
         );
 

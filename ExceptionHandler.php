@@ -237,7 +237,7 @@ final class ExceptionHandler {
 
         $now = time();
         $trace = $exception->getTraceAsString();
-        $fileName = __FUNCTION__ . '.' . $now . uniqid('.trace.') . substr(sha1($now . $trace), 0, 16) . '.txt';
+        $fileName = __FUNCTION__ . '.' . $now . uniqid('.trace.') .'.txt';
         $traceFile = self::$dataPath . '/' . $fileName;
         file_put_contents($traceFile, $trace);
 

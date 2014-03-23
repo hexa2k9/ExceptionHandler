@@ -24,6 +24,7 @@ You need to configure this Class before you can use it:
 \ExceptionHandler::setEnv('production');                  // The Applications Environment (e.g. production or development)
 \ExceptionHandler::setHostname(php_uname('n'));           // The Hostname your Application is running on
 \ExceptionHandler::setVersion('1.0.0');                   // Your Application Version
+\ExceptionHandler::setDataPath('/tmp');                   // Set your Path to store full Exception Traces in
 ```
 
 And finally set the Exception Handler:

@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Exceptionhandler by hexa2k9</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Exceptionhandler</h1>
+        <p>A PHP Exception Handler to Post Exceptions to a Slack Channel</p>
+
+        <p class="view"><a href="https://github.com/hexa2k9/ExceptionHandler">View the Project on GitHub <small>hexa2k9/ExceptionHandler</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/hexa2k9/ExceptionHandler/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/hexa2k9/ExceptionHandler/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/hexa2k9/ExceptionHandler">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="exceptionhandler" class="anchor" href="#exceptionhandler"><span class="octicon octicon-link"></span></a>ExceptionHandler</h1>
+
+<p>A PHP Exception Handler to Post Exceptions to a Slack Channel</p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<ul>
+<li>make sure your PHP Installation has <code>curl</code> loaded</li>
+<li>create a Channel on Slack</li>
+<li>create an Incoming Webook for your Slack Channel &amp; copy the Integration Token.</li>
+<li>add the <a href="https://packagist.org/packages/hexa2k9/exception-handler">Packagist Package</a> to your <code>composer.json</code>
+</li>
+<li>run <code>composer update</code>
+</li>
+</ul><h2>
+<a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h2>
+
+<p>You need to configure this Class before you can use it:</p>
+
+<div class="highlight highlight-php"><pre><span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setToken</span><span class="p">(</span><span class="s1">'&lt;your_integration_token&gt;'</span><span class="p">);</span>  <span class="c1">// The token you've copied before</span>
+<span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setUsername</span><span class="p">(</span><span class="s1">'company'</span><span class="p">);</span>                <span class="c1">// Your Slack Subdomain (e.g. company.slack.com)</span>
+<span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setWebhookUser</span><span class="p">(</span><span class="s1">'exception'</span><span class="p">);</span>           <span class="c1">// The Username who will post Messages</span>
+<span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setWebhookChannel</span><span class="p">(</span><span class="s1">'#exceptions'</span><span class="p">);</span>      <span class="c1">// Your Slack Channel</span>
+<span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setIcon</span><span class="p">(</span><span class="s1">':ghost:'</span><span class="p">);</span>                    <span class="c1">// The Icon for the Username (can be :ghost: or an URL)</span>
+<span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setEnv</span><span class="p">(</span><span class="s1">'production'</span><span class="p">);</span>                  <span class="c1">// The Applications Environment (e.g. production or development)</span>
+<span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setHostname</span><span class="p">(</span><span class="nb">php_uname</span><span class="p">(</span><span class="s1">'n'</span><span class="p">));</span>           <span class="c1">// The Hostname your Application is running on</span>
+<span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setVersion</span><span class="p">(</span><span class="s1">'1.0.0'</span><span class="p">);</span>                   <span class="c1">// Your Application Version</span>
+<span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setDataPath</span><span class="p">(</span><span class="s1">'/tmp'</span><span class="p">);</span>                   <span class="c1">// Set your Path to store full Exception Traces in</span>
+</pre></div>
+
+<p>And finally set the Exception Handler:</p>
+
+<div class="highlight highlight-php"><pre><span class="nb">set_exception_handler</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">'\ExceptionHandler'</span><span class="p">,</span> <span class="s1">'handleException'</span><span class="p">));</span>
+</pre></div>
+
+<p>You will start to get Messages like these in your Channel:</p>
+
+<blockquote>
+<p>chrisbookair.local/2.0.81@development: uncaught Exception in file /Users/christian/Code/PhpstormProjects/api-v2/app/Classes/Util/GeneralUtility.php on line 581 (Code: 8 - Trace: handleException.1395606690.trace.532f44a20d0cc.txt): Memcache::connect(): Server 127.0.0.1 (tcp 11211) failed with: Connection refused (61)</p>
+</blockquote>
+
+<p>ExceptionHandler will quit your current Applications run and returns a <code>json_encode()</code>d Message</p>
+
+<div class="highlight highlight-json"><pre><span class="p">{</span>
+  <span class="nt">"status"</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+  <span class="nt">"message"</span><span class="p">:</span> <span class="s2">"Okay, Houston, we've had a problem here. -- Don't panic. The Team has been notified."</span>
+<span class="p">}</span>
+</pre></div>
+
+<h2>
+<a name="other-usage" class="anchor" href="#other-usage"><span class="octicon octicon-link"></span></a>other Usage</h2>
+
+<p>By default this ExceptionHandler will care about uncaught Exceptions. If you want to send Slack Messages for Exceptions you handled you can use this like <code>\ExceptionHandler::handleException($exception, true);</code> to get notified. ExceptionHandler will not <code>die()</code> in this case.</p>
+
+<p>You can even use ExdeptionHandler to just send Notifications. This feels a little weired however: <code>\ExceptionHandler::handleException(new \Exception('I\'m some text to send to Slack.'), true)</code>;</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/hexa2k9">hexa2k9</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>

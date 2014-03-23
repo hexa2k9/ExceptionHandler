@@ -235,8 +235,9 @@ final class ExceptionHandler {
             self::setDataPath();
         }
 
+        $now = time();
         $trace = $exception->getTraceAsString();
-        $traceFile = trim(self::$dataPath) . '/'. __FUNCTION__ . uniqid('.trace.') . sha1(time() . $trace) . '.txt';
+        $traceFile = self::$dataPath . '/' . __FUNCTION__ . '.' . $now . uniqid('.trace.') . sha1($now . $trace) . '.txt';
         file_put_contents($traceFile, $trace);
 
         $type = $caught === false ? 'uncaught' : 'caught';

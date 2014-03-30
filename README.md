@@ -16,15 +16,19 @@ A PHP Exception Handler to Post Exceptions to a Slack Channel
 You need to configure this Class before you can use it:
 
 ```php
-\ExceptionHandler::setToken('<your_integration_token>');  // The token you've copied before
-\ExceptionHandler::setUsername('company');                // Your Slack Subdomain (e.g. company.slack.com)
-\ExceptionHandler::setWebhookUser('exception');           // The Username who will post Messages
-\ExceptionHandler::setWebhookChannel('#exceptions');      // Your Slack Channel
-\ExceptionHandler::setIcon(':ghost:');                    // The Icon for the Username (can be :ghost: or an URL)
-\ExceptionHandler::setEnv('production');                  // The Applications Environment (e.g. production or development)
-\ExceptionHandler::setHostname(php_uname('n'));           // The Hostname your Application is running on
-\ExceptionHandler::setVersion('1.0.0');                   // Your Application Version
-\ExceptionHandler::setDataPath('/tmp');                   // Set your Path to store full Exception Traces in
+ExceptionHandler::configure(
+    array(
+        'username'       => 'company',                  // Your Slack Subdomain (e.g. company.slack.com)
+        'token'          => '<your token>',             // The Slack Integration Token
+        'data_path'      => '/tmp',                     // The Path to store full Exception Traces in
+        'webhookChannel' => '#exceptions',              // Your Slack Channel
+        'webhookUser'    => 'exception',                // The Username who will post Messages
+        'webhookIcon'    => ':ghost:',                  // The Icon for the Username (can be :ghost: or an URL)
+        'hostname'       => php_uname('n'),             // The Hostname your Application is running on
+        'version'        => '1.0.0',                    // Your Application Version
+        'env'            => 'production'                // The Applications Environment (e.g. production or development)
+    )
+);
 ```
 
 And finally set the Exception Handler:

@@ -49,15 +49,19 @@
 
 <p>You need to configure this Class before you can use it:</p>
 
-<div class="highlight highlight-php"><pre><span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setToken</span><span class="p">(</span><span class="s1">'&lt;your_integration_token&gt;'</span><span class="p">);</span>  <span class="c1">// The token you've copied before</span>
-<span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setUsername</span><span class="p">(</span><span class="s1">'company'</span><span class="p">);</span>                <span class="c1">// Your Slack Subdomain (e.g. company.slack.com)</span>
-<span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setWebhookUser</span><span class="p">(</span><span class="s1">'exception'</span><span class="p">);</span>           <span class="c1">// The Username who will post Messages</span>
-<span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setWebhookChannel</span><span class="p">(</span><span class="s1">'#exceptions'</span><span class="p">);</span>      <span class="c1">// Your Slack Channel</span>
-<span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setIcon</span><span class="p">(</span><span class="s1">':ghost:'</span><span class="p">);</span>                    <span class="c1">// The Icon for the Username (can be :ghost: or an URL)</span>
-<span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setEnv</span><span class="p">(</span><span class="s1">'production'</span><span class="p">);</span>                  <span class="c1">// The Applications Environment (e.g. production or development)</span>
-<span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setHostname</span><span class="p">(</span><span class="nb">php_uname</span><span class="p">(</span><span class="s1">'n'</span><span class="p">));</span>           <span class="c1">// The Hostname your Application is running on</span>
-<span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setVersion</span><span class="p">(</span><span class="s1">'1.0.0'</span><span class="p">);</span>                   <span class="c1">// Your Application Version</span>
-<span class="nx">\ExceptionHandler</span><span class="o">::</span><span class="na">setDataPath</span><span class="p">(</span><span class="s1">'/tmp'</span><span class="p">);</span>                   <span class="c1">// Set your Path to store full Exception Traces in</span>
+<div class="highlight highlight-php"><pre><span class="nx">ExceptionHandler</span><span class="o">::</span><span class="na">configure</span><span class="p">(</span>
+    <span class="k">array</span><span class="p">(</span>
+        <span class="s1">'username'</span>       <span class="o">=&gt;</span> <span class="s1">'company'</span><span class="p">,</span>                  <span class="c1">// Your Slack Subdomain (e.g. company.slack.com)</span>
+        <span class="s1">'token'</span>          <span class="o">=&gt;</span> <span class="s1">'&lt;your token&gt;'</span><span class="p">,</span>             <span class="c1">// The Slack Integration Token</span>
+        <span class="s1">'data_path'</span>      <span class="o">=&gt;</span> <span class="s1">'/tmp'</span><span class="p">,</span>                     <span class="c1">// The Path to store full Exception Traces in</span>
+        <span class="s1">'webhookChannel'</span> <span class="o">=&gt;</span> <span class="s1">'#exceptions'</span><span class="p">,</span>              <span class="c1">// Your Slack Channel</span>
+        <span class="s1">'webhookUser'</span>    <span class="o">=&gt;</span> <span class="s1">'exception'</span><span class="p">,</span>                <span class="c1">// The Username who will post Messages</span>
+        <span class="s1">'webhookIcon'</span>    <span class="o">=&gt;</span> <span class="s1">':ghost:'</span><span class="p">,</span>                  <span class="c1">// The Icon for the Username (can be :ghost: or an URL)</span>
+        <span class="s1">'hostname'</span>       <span class="o">=&gt;</span> <span class="nb">php_uname</span><span class="p">(</span><span class="s1">'n'</span><span class="p">),</span>             <span class="c1">// The Hostname your Application is running on</span>
+        <span class="s1">'version'</span>        <span class="o">=&gt;</span> <span class="s1">'1.0.0'</span><span class="p">,</span>                    <span class="c1">// Your Application Version</span>
+        <span class="s1">'env'</span>            <span class="o">=&gt;</span> <span class="s1">'production'</span>                <span class="c1">// The Applications Environment (e.g. production or development)</span>
+    <span class="p">)</span>
+<span class="p">);</span>
 </pre></div>
 
 <p>And finally set the Exception Handler:</p>

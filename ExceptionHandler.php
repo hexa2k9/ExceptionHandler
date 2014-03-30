@@ -33,54 +33,29 @@
 final class ExceptionHandler {
 
     /**
-     * @var string The Slack Username (<username>.slack.com)
+     * @var array The default Settings
      */
-    protected static $username = null;
+    protected static $defaultSettings = array(
+        'username'       => null,           // Your Slack Subdomain (e.g. company.slack.com)
+        'token'          => null,           // The Slack Integration Token
+        'data_path'      => null,           // The Path to store full Exception Traces in
+        'webhookChannel' => null,           // Your Slack Channel
+        'webhookUser'    => __CLASS__,      // The Username who will post Messages
+        'webhookIcon'    => ':ghost:',      // The Icon for the Username (can be :ghost: or an URL)
+        'hostname'       => 'localhost',    // The Hostname your Application is running on
+        'version'        => '1.0.0',        // Your Application Version
+        'env'            => 'production'    // The Applications Environment (e.g. production or development)
+    );
 
     /**
-     * @var string The Slack Integration Token
+     * @var array The actual Settings after Configuration
      */
-    protected static $token = null;
-
-    /**
-     * @var string The Username posting to our Slack Channel
-     */
-    protected static $webhookUser = null;
-
-    /**
-     * @var string The Channel where our Exception will be posted
-     */
-    protected static $webhookChannel = null;
-
-    /**
-     * @var string The Icon to use. Can either be ':ghost:' (default) or an URL
-     */
-    protected static $webhookIcon = ':ghost:';
-
-    /**
-     * @var string The Hostname your Application is running on
-     */
-    protected static $hostname = 'localhost';
-
-    /**
-     * @var string The Version of your Application
-     */
-    protected static $version = '1.0.0';
-
-    /**
-     * @var string The Environment your Application is running (e.g. 'production' or 'development')
-     */
-    protected static $env = 'production';
+    protected static $settings = array();
 
     /**
      * @var int The intended HTTP Response Status
      */
     protected static $status = 200;
-
-    /**
-     * @var string The Path where full Stacktraces are stored
-     */
-    protected static $dataPath = null;
 
     /**
      * HTTP Status Codes
@@ -141,74 +116,10 @@ final class ExceptionHandler {
     );
 
     /**
-     * @param string $token
+     * @param array $settings
      */
-    final public static function setToken($token = null) {
-        self::$token = trim($token);
-    }
-
-    /**
-     * @param string $username
-     */
-    final public static function setUsername($username = null) {
-        self::$username = trim($username);
-    }
-
-    /**
-     * @param string $webhookChannel
-     */
-    final public static function setWebhookChannel($webhookChannel = null) {
-        self::$webhookChannel = trim($webhookChannel);
-    }
-
-    /**
-     * @param string $webhookUser
-     */
-    final public static function setWebhookUser($webhookUser = null) {
-        self::$webhookUser = trim($webhookUser);
-    }
-
-    /**
-     * @param string $datapath
-     */
-    final public static function setDataPath($datapath = null) {
-        if (is_dir($datapath)) {
-            self::$dataPath = trim($datapath);
-        } else {
-            self::$dataPath = sys_get_temp_dir();
-        }
-    }
-
-    /**
-     * @param string $webhookIcon
-     */
-    final public static function setWebhookIcon($webhookIcon = ':ghost:') {
-        if ($webhookIcon == 'ghost') {
-            $webhookIcon = ':ghost:';
-        }
-
-        self::$webhookIcon = trim($webhookIcon);
-    }
-
-    /**
-     * @param string $env
-     */
-    final public static function setEnv($env = 'production') {
-        self::$env = trim($env);
-    }
-
-    /**
-     * @param string $hostname
-     */
-    final public static function setHostname($hostname = 'localhost') {
-        self::$hostname = trim($hostname);
-    }
-
-    /**
-     * @param string $version
-     */
-    final public static function setVersion($version = '1.0.0') {
-        self::$version = trim($version);
+    final public static function configure(array $settings = array()) {
+        self::$settings = array_merge(self::$defaultSettings, $settings);
     }
 
     /**
@@ -220,10 +131,10 @@ final class ExceptionHandler {
      * @throws MainbusUndervoltException
      */
     final public static function handleException(Exception $exception, $caught = false) {
-        if (is_null(self::$token)
-            || is_null(self::$username)
-            || is_null(self::$webhookUser)
-            || is_null(self::$webhookChannel)
+        if (is_null(self::$settings['token'])
+            || is_null(self::$settings['username'])
+            || is_null(self::$settings['webhookUser'])
+            || is_null(self::$settings['webhookChannel'])
         ) {
             throw new MainbusUndervoltException(
                 'Not all required parameters are set. Please configure ' . __CLASS__,
@@ -231,22 +142,22 @@ final class ExceptionHandler {
             );
         }
 
-        if (is_null(self::$dataPath)) {
+        if (is_null(self::$settings['data_path'])) {
             self::setDataPath();
         }
 
         $now = time();
         $trace = $exception->getTraceAsString();
-        $fileName = __FUNCTION__ . '.' . $now . uniqid('.trace.') .'.txt';
-        $traceFile = self::$dataPath . '/' . $fileName;
+        $fileName = __FUNCTION__ . '.' . $now . uniqid('.trace.') . '.txt';
+        $traceFile = self::$settings['data_path'] . '/' . $fileName;
         file_put_contents($traceFile, $trace);
 
         $type = $caught === false ? 'uncaught' : 'caught';
         $messageText = sprintf(
             '%s/%s@%s: %s Exception in file %s on line %d (Code: %d - Trace: %s): %s',
-            self::$hostname,
-            self::$version,
-            self::$env,
+            self::$settings['hostname'],
+            self::$settings['version'],
+            self::$settings['env'],
             $type,
             $exception->getFile(),
             $exception->getLine(),
@@ -280,11 +191,11 @@ final class ExceptionHandler {
         }
 
         $messageText = trim($messageText);
-        $url = 'https://' . self::$username . '.slack.com/services/hooks/incoming-webhook?token=' . self::$token . '&parse=full';
+        $url = 'https://' . trim(self::$settings['username']) . '.slack.com/services/hooks/incoming-webhook?token=' . trim(self::$settings['token']) . '&parse=full';
         $payload = array(
-            'channel'    => self::$webhookChannel,
-            'username'   => self::$webhookUser,
-            'icon_emoji' => self::$webhookIcon,
+            'channel'    => self::$settings['webhookChannel'],
+            'username'   => self::$settings['webhookUser'],
+            'icon_emoji' => self::$settings['webhookIcon'],
             'text'       => $messageText,
         );
         $fields = 'payload=' . json_encode($payload);
@@ -371,6 +282,17 @@ final class ExceptionHandler {
             return self::$messages[$status];
         } else {
             return null;
+        }
+    }
+
+    /**
+     * @param string $datapath
+     */
+    final private static function setDataPath($datapath = null) {
+        if (is_dir($datapath)) {
+            self::$settings['data_path'] = trim($datapath);
+        } else {
+            self::$settings['data_path'] = sys_get_temp_dir();
         }
     }
 }

@@ -30,7 +30,8 @@
 /**
  * Class ExceptionHandler
  */
-final class ExceptionHandler {
+final class ExceptionHandler
+{
 
     /**
      * @var array The default Settings
@@ -118,7 +119,8 @@ final class ExceptionHandler {
     /**
      * @param array $settings
      */
-    final public static function configure(array $settings = array()) {
+    final public static function configure(array $settings = array())
+    {
         self::$settings = array_merge(self::$defaultSettings, $settings);
     }
 
@@ -130,7 +132,8 @@ final class ExceptionHandler {
      *
      * @throws MainbusUndervoltException
      */
-    final public static function handleException(Exception $exception, $caught = false) {
+    final public static function handleException(Exception $exception, $caught = false)
+    {
         if (is_null(self::$settings['token'])
             || is_null(self::$settings['username'])
             || is_null(self::$settings['webhookUser'])
@@ -147,7 +150,7 @@ final class ExceptionHandler {
         }
 
         $now = time();
-        $trace = $exception->getTraceAsString();
+        $trace = self::getExceptionTraceAsString($exception);
         $fileName = __FUNCTION__ . '.' . $now . uniqid('.trace.') . '.txt';
         $traceFile = self::$settings['data_path'] . '/' . $fileName;
         file_put_contents($traceFile, $trace);
@@ -182,7 +185,8 @@ final class ExceptionHandler {
      *
      * @return mixed
      */
-    final private static function sendSlackMessage($messageText) {
+    final private static function sendSlackMessage($messageText)
+    {
         if (!extension_loaded('curl')) {
             self::setResponseBody(
                 'Okay, Houston, we\'ve had a problem here. -- The Team could not be notified.',
@@ -225,7 +229,8 @@ final class ExceptionHandler {
      *
      * @param $status
      */
-    final private static function setStatus($status) {
+    final private static function setStatus($status)
+    {
         self::$status = intval($status);
 
         if (headers_sent() === false) {
@@ -243,7 +248,8 @@ final class ExceptionHandler {
      * @param $key
      * @param $value
      */
-    final private static function setHeader($key, $value) {
+    final private static function setHeader($key, $value)
+    {
         // @todo: handle empty/null values
         header(sprintf('%s: %s', trim($key), trim($value)));
     }
@@ -254,7 +260,8 @@ final class ExceptionHandler {
      * @param      $message
      * @param null $status
      */
-    final private static function setResponseBody($message, $status = null) {
+    final private static function setResponseBody($message, $status = null)
+    {
         $message = trim($message);
         self::$status = (is_null($status) || is_null(self::getMessageForCode($status))) ? 500 : $status;
 
@@ -277,7 +284,8 @@ final class ExceptionHandler {
      *
      * @return string|null
      */
-    final private static function getMessageForCode($status) {
+    final private static function getMessageForCode($status)
+    {
         if (isset(self::$messages[$status])) {
             return self::$messages[$status];
         } else {
@@ -288,12 +296,57 @@ final class ExceptionHandler {
     /**
      * @param string $datapath
      */
-    final private static function setDataPath($datapath = null) {
+    final private static function setDataPath($datapath = null)
+    {
         if (is_dir($datapath)) {
             self::$settings['data_path'] = trim($datapath);
         } else {
             self::$settings['data_path'] = sys_get_temp_dir();
         }
+    }
+
+    /**
+     * @param $exception
+     *
+     * @return string
+     */
+    final private static function getExceptionTraceAsString(Exception $exception)
+    {
+        $rtn = "";
+        $count = 0;
+        foreach ($exception->getTrace() as $frame) {
+            $args = "";
+            if (isset($frame['args'])) {
+                $args = array();
+                foreach ($frame['args'] as $arg) {
+                    if (is_string($arg)) {
+                        $args[] = "'" . $arg . "'";
+                    } elseif (is_array($arg)) {
+                        $args[] = "Array";
+                    } elseif (is_null($arg)) {
+                        $args[] = 'NULL';
+                    } elseif (is_bool($arg)) {
+                        $args[] = ($arg) ? "true" : "false";
+                    } elseif (is_object($arg)) {
+                        $args[] = get_class($arg);
+                    } elseif (is_resource($arg)) {
+                        $args[] = get_resource_type($arg);
+                    } else {
+                        $args[] = $arg;
+                    }
+                }
+                $args = join(", ", $args);
+            }
+            $rtn .= sprintf("#%s %s(%s): %s(%s)\n",
+                $count,
+                isset($frame['file']) ? $frame['file'] : 'unknown file',
+                isset($frame['line']) ? $frame['line'] : 'unknown line',
+                (isset($frame['class'])) ? $frame['class'] . $frame['type'] . $frame['function'] : $frame['function'],
+                $args);
+            $count++;
+        }
+
+        return $rtn;
     }
 }
 
@@ -303,5 +356,6 @@ final class ExceptionHandler {
  * @package izsmart\Util
  */
 final class MainbusUndervoltException extends
-    \InvalidArgumentException {
+    \InvalidArgumentException
+{
 }

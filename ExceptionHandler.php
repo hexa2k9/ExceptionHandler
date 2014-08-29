@@ -179,6 +179,29 @@ final class ExceptionHandler
     }
 
     /**
+     * The Error Handler
+     *
+     * Throw new ErrorException in case something happens
+     *
+     * @param $errorNo
+     * @param $errorString
+     * @param $errorFile
+     * @param $errorLine
+     * @param array $errorContext
+     *
+     * @return bool
+     * @throws ErrorException
+     */
+    final public static function handleError($errorNo, $errorString, $errorFile, $errorLine, array $errorContext)
+    {
+        if (0 === error_reporting()) {
+            return false;
+        }
+
+        throw new ErrorException($errorString, 0, $errorNo, $errorFile, $errorLine);
+    }
+
+    /**
      * Send a Message to the Slack Channel
      *
      * @param $messageText

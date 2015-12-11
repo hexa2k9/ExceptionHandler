@@ -54,4 +54,4 @@ ExceptionHandler will quit your current Applications run and returns a `json_enc
 
 By default this ExceptionHandler will care about uncaught Exceptions. If you want to send Slack Messages for Exceptions you handled you can use this like `\ExceptionHandler::handleException($exception, true);` to get notified. ExceptionHandler will not `die()` in this case.
 
-You can even use ExdeptionHandler to just send Notifications. This feels a little weired however: `\ExceptionHandler::handleException(new \Exception('I\'m some text to send to Slack.'), true)`;
+You can even use ExceptionHandler to just send Notifications. This feels a little weird however: `\ExceptionHandler::handleException(new \Exception('I\'m some text to send to Slack.'), true)`;
